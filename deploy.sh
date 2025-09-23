@@ -5,7 +5,7 @@ echo "🚀 Preparing Alert Grader Backend for Azure Deployment..."
 
 # Create deployment package
 echo "📦 Creating deployment package..."
-cd /Users/priyaj/alert-grader/backend-python
+cd "$(dirname "$0")"
 
 # Remove virtual environment and cache files
 rm -rf venv
