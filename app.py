@@ -6,6 +6,9 @@ import uuid
 import os
 from datetime import datetime
 import re
+import time
+import random
+import threading
 
 app = Flask(__name__)
 
@@ -120,20 +123,32 @@ def upload_file():
         
         print(f"File uploaded: {filename}")
         
-        # Create hardcoded output based on original filename
-        output_data = create_hardcoded_output(file.filename)
+        # Start background processing with random delay
+        def process_file_async():
+            # Random delay between 10-15 seconds
+            delay = random.randint(10, 15)
+            print(f"Processing file {filename}, waiting {delay} seconds...")
+            time.sleep(delay)
+            
+            # Create hardcoded output based on original filename
+            output_data = create_hardcoded_output(file.filename)
+            
+            # Upload output JSON to output container
+            output_filename = f"{unique_id}.json"
+            output_blob_client = output_container_client.get_blob_client(output_filename)
+            output_blob_client.upload_blob(output_data.encode('utf-8'), overwrite=True)
+            
+            print(f"Output created: {output_filename}")
         
-        # Upload output JSON to output container
-        output_filename = f"{unique_id}.json"
-        output_blob_client = output_container_client.get_blob_client(output_filename)
-        output_blob_client.upload_blob(output_data.encode('utf-8'), overwrite=True)
-        
-        print(f"Output created: {output_filename}")
+        # Start background thread
+        thread = threading.Thread(target=process_file_async)
+        thread.daemon = True
+        thread.start()
         
         return jsonify({
             "job_id": unique_id,
             "filename": filename,
-            "message": "File uploaded and processed successfully",
+            "message": "File uploaded successfully, processing in background...",
             "upload_time": datetime.utcnow().isoformat()
         })
         
