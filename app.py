@@ -125,9 +125,9 @@ def upload_file():
         
         # Start background processing with random delay
         def process_file_async():
-            # Random delay between 10-15 seconds
-            delay = random.randint(10, 15)
-            print(f"Processing file {filename}, waiting {delay} seconds...")
+            # Random delay between 2-3 minutes (120-180 seconds)
+            delay = random.randint(120, 180)
+            print(f"Processing file {filename}, waiting {delay} seconds ({delay//60} minutes)...")
             time.sleep(delay)
             
             # Create hardcoded output based on original filename
